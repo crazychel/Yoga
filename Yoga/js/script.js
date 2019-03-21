@@ -154,98 +154,55 @@ window.addEventListener('DOMContentLoaded', function () {
         input = form.getElementsByTagName('input'),
         statusMassage = document.createElement('div'),
         img = document.createElement('img'),
-        imgHold = document.createElement('img');
+        formContact = document.getElementById('form'),
+        inputContact = formContact.getElementsByTagName('input');
 
     statusMassage.classList.add('status');
 
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        form.appendChild(statusMassage);
+    function sendForm(elem, phone) {
+        elem.addEventListener('submit', function (event) {
+            event.preventDefault();
+            elem.appendChild(statusMassage);
 
-        if (phonenumber(input[0]) == true) {
+            if (phonenumber(inputContact[1]) == true) {
 
-            img.src = "img/savedisk.png";
+                img.src = "img/savedisk.png";
 
-            let request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                let request = new XMLHttpRequest();
+                request.open('POST', 'server.php');
+                request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
-            let formData = new FormData(form);
+                let formData = new FormData(elem);
+                let obj = {};
+                formData.forEach(function (value, key) {
+                    obj[key] = value;
+                });
+                let json = JSON.stringify(obj);
 
-            let obj = {};
-            formData.forEach(function (value, key) {
-                obj[key] = value;
-            });
-            let json = JSON.stringify(obj);
-            request.send(json);
+                request.send(json);
 
-            request.addEventListener('readystatechange', function () {
-                if (request.readyState < 4) {
-                    statusMassage.innerHTML = massage.loading;
-                } else if (request.readyState === 4 && request.status == 200) {
-                    statusMassage.innerHTML = massage.success;
-                    form.appendChild(img);
-                } else {
-                    statusMassage.innerHTML = massage.failure;
+                request.addEventListener('readystatechange', function () {
+                    if (request.readyState < 4) {
+                        statusMassage.innerHTML = massage.loading;
+                    } else if (request.readyState === 4 && request.status == 200) {
+                        statusMassage.innerHTML = massage.success;
+                        elem.appendChild(img);
+                    } else {
+                        statusMassage.innerHTML = massage.failure;
+                    }
+                });
+                for (let i = 0; i < phone.length; i++) {
+                    phone.value = '';
                 }
-            });
-
-            for (let i = 0; i < input.length; i++) {
-                input[i].value = '';
+            } else {
+                img.src = "img/hold.png";
+                elem.appendChild(img);
+                statusMassage.innerHTML = 'Введите коректный номер телефона';
             }
-        } else {
-            img.src = "img/hold.png";
-            form.appendChild(img);
-            statusMassage.innerHTML = 'Введите коректный номер телефона';
-        }
-    });
-
-    // д/з
-
-    let formContact = document.getElementById('form'),
-        inputContact = formContact.getElementsByTagName('input');
-
-    formContact.addEventListener('submit', function (event) {
-        event.preventDefault();
-        formContact.appendChild(statusMassage);
-        console.log(phonenumber(inputContact[1]));
-
-        if (phonenumber(inputContact[1]) == true) {
-
-            img.src = "img/savedisk.png";
-
-            let request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
-            let formData = new FormData(formContact);
-            let obj = {};
-            formData.forEach(function (value, key) {
-                obj[key] = value;
-            });
-            let json = JSON.stringify(obj);
-
-            request.send(json);
-
-            request.addEventListener('readystatechange', function () {
-                if (request.readyState < 4) {
-                    statusMassage.innerHTML = massage.loading;
-                } else if (request.readyState === 4 && request.status == 200) {
-                    statusMassage.innerHTML = massage.success;
-                    formContact.appendChild(img);
-                } else {
-                    statusMassage.innerHTML = massage.failure;
-                }
-            });
-            for (let i = 0; i < inputContact.length; i++) {
-                inputContact[i].value = '';
-            }
-        } else {
-            img.src = "img/hold.png";
-            formContact.appendChild(img);
-            statusMassage.innerHTML = 'Введите коректный номер телефона';
-        }
-    });
+        });
+    }
+    sendForm(formContact, inputContact[1]);
+    sendForm(form, input)
 
     function phonenumber(inputtxt) {
         let phoneNum = /^[\+]?[(]?[0-9]{3}[)]?[0-9]{6,9}$/im;
