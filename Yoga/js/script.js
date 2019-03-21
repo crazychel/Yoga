@@ -156,7 +156,6 @@ window.addEventListener('DOMContentLoaded', function () {
         img = document.createElement('img'),
         formContact = document.getElementById('form'),
         inputContact = formContact.getElementsByTagName('input');
-
     statusMassage.classList.add('status');
 
     function sendForm(elem, phone) {
@@ -164,36 +163,53 @@ window.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             elem.appendChild(statusMassage);
 
-            if (phonenumber(inputContact[1]) == true) {
-
-                img.src = "img/savedisk.png";
-
-                let request = new XMLHttpRequest();
-                request.open('POST', 'server.php');
-                request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-
+            if (phonenumber(phone) == true) {
                 let formData = new FormData(elem);
-                let obj = {};
-                formData.forEach(function (value, key) {
-                    obj[key] = value;
-                });
-                let json = JSON.stringify(obj);
 
-                request.send(json);
+                function postData() {
 
-                request.addEventListener('readystatechange', function () {
-                    if (request.readyState < 4) {
-                        statusMassage.innerHTML = massage.loading;
-                    } else if (request.readyState === 4 && request.status == 200) {
-                        statusMassage.innerHTML = massage.success;
-                        elem.appendChild(img);
-                    } else {
-                        statusMassage.innerHTML = massage.failure;
-                    }
-                });
-                for (let i = 0; i < phone.length; i++) {
+                    return new Promise((resolve, reject) => {
+
+                        let request = new XMLHttpRequest();
+                        request.open('POST', 'server.php');
+                        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+                        let obj = {};
+                        formData.forEach(function (value, key) {
+                            obj[key] = value;
+                        });
+                        let json = JSON.stringify(obj);
+                        data = json;
+                        request.send(json);
+
+                        request.addEventListener('readystatechange', function () {
+                            if (request.readyState < 4) {
+                                resolve();
+                            } else if (request.readyState == 4) {
+                                resolve();
+                            } else {
+                                reject();
+                            }
+                        });
+
+                    });
+                } // End postData
+
+                function clearInput() {
                     phone.value = '';
+                    if (inputContact[1].value == '') inputContact[0].value = '';
                 }
+
+                postData(formData)
+                    .then(() => statusMassage.innerHTML = massage.loading)
+                    .then(() => {
+                        statusMassage.innerHTML = massage.success;
+                        img.src = "img/savedisk.png";
+                        elem.appendChild(img);
+                    })
+                    .catch(() => statusMassage.innerHTML = massage.failure)
+                    .then(clearInput);
+
             } else {
                 img.src = "img/hold.png";
                 elem.appendChild(img);
@@ -201,16 +217,23 @@ window.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
     sendForm(formContact, inputContact[1]);
-    sendForm(form, input)
+    sendForm(form, input[0]);
 
     function phonenumber(inputtxt) {
         let phoneNum = /^[\+]?[(]?[0-9]{3}[)]?[0-9]{6,9}$/im;
         if (inputtxt.value.match(phoneNum)) {
             return true;
         } else {
-
             return false;
+        }
+    }
+
+    function clearInput() {
+        for (let i = 0; i < inputContact.length; i++) {
+            input[i].value = '';
+            inputContact[i].value = '';
         }
     }
 
