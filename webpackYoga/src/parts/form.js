@@ -1,4 +1,5 @@
 function form() {
+
     let massage = {
         loading: 'Загрузка...',
         success: 'Спасибо! Скоро мы с вами свяжемся!',
@@ -75,6 +76,29 @@ function form() {
 
     sendForm(formContact, inputContact[1]);
     sendForm(form, input[0]);
+
+    inputphone(formContact[1]);
+    inputphone(input[0]);
+
+    function inputphone(input) {
+        input.onkeypress = function (e) {
+            e = e || event;
+
+            let chr = getChar(e);
+
+            if (chr >= '0' && chr <= '9' || chr == '+') {
+                return true;
+            } else {
+                return false;
+            }
+
+        }
+    }
+
+    function getChar(event) {
+        if (event.which < 32) return null;
+        return String.fromCharCode(event.which)
+    }
 
     function phonenumber(inputtxt) {
         let phoneNum = /^[\+]?[(]?[0-9]{3}[)]?[0-9]{6,9}$/im;

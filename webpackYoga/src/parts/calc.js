@@ -13,26 +13,28 @@ function calc() {
     persons.addEventListener('input', function () {
         personsSum = +this.value;
 
-        if (restDays.value == '' || persons.value == '' || valid(persons) == true) {
+        if (restDays.value == '' || restDays.value == '0' || persons.value == '' ||
+            persons.value == '0' || valid(restDays) == true || valid(persons) == true) {
             totalValue.innerHTML = 0;
         } else {
             total = (daysSum + personsSum) * 4000;
-            totalValue.innerHTML = total;
+            totalValue.innerHTML = total * place.options[place.selectedIndex].value;
         }
     });
 
     restDays.addEventListener('input', function () {
         daysSum = +this.value;
 
-        if (restDays.value == '' || persons.value == '' || valid(restDays) == true) {
+        if (restDays.value == '' || restDays.value == '0' || persons.value == '' ||
+            persons.value == '0' || valid(restDays) == true || valid(persons) == true) {
             totalValue.innerHTML = 0;
         } else {
             total = (daysSum + personsSum) * 4000;
-            totalValue.innerHTML = total;
+            totalValue.innerHTML = total * place.options[place.selectedIndex].value;
         }
     });
 
-    place.addEventListener('change', function () {
+    place.addEventListener('change', function select() {
         if (restDays.value == '' || persons.value == '') {
             totalValue.innerHTML = 0;
         } else {
@@ -42,7 +44,7 @@ function calc() {
     });
 
     function valid(inNum) {
-        if (inNum.value.match(/[,]?[.]/)) {
+        if (inNum.value.match(/[\.\,]/)) {
             return true;
         } else {
             return false;
