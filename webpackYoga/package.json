@@ -1,23 +1,23 @@
 {
-  "name": "Yoga",
+  "name": "webpackyoga",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-es6-promise": "^1.1.1",
+    "es6-promise": "^4.2.6",
+    "formdata-polyfill": "^3.0.17",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.4.0",
-    "babel-loader": "^8.0.5"
+    "formdata-polyfill": "^3.0.17"
   }
 }
