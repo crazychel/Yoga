@@ -1579,6 +1579,8 @@ function calc() {
       totalValue.innerHTML = a * this.options[this.selectedIndex].value;
     }
   });
+  inputphone(persons);
+  inputphone(restDays);
 
   function valid(inNum) {
     if (inNum.value.match(/[\.\,]/)) {
@@ -1586,6 +1588,24 @@ function calc() {
     } else {
       return false;
     }
+  }
+
+  function inputphone(input) {
+    input.onkeypress = function (e) {
+      e = e || event;
+      var chr = getChar(e);
+
+      if (chr >= '0' && chr <= '9' || chr == '+') {
+        return true;
+      } else {
+        return false;
+      }
+    };
+  }
+
+  function getChar(event) {
+    if (event.which < 32) return null;
+    return String.fromCharCode(event.which);
   }
 }
 
@@ -1624,27 +1644,23 @@ function form() {
       if (phonenumber(phone) == true) {
         var formData = new FormData(elem);
 
-        function postData() {
+        function postData(data) {
+          var request = new XMLHttpRequest();
+          request.open('POST', 'server.php');
+          request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           return new _Promise(function (resolve, reject) {
-            var request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-            var obj = {};
-            formData.forEach(function (value, key) {
-              obj[key] = value;
-            });
-            var json = JSON.stringify(obj);
-            data = json;
-            request.send(json);
             request.addEventListener('readystatechange', function () {
               if (request.readyState < 4) {
                 resolve();
               } else if (request.readyState == 4) {
-                resolve();
+                if (request.status == 200 && request.status < 300) {
+                  resolve();
+                }
               } else {
                 reject();
               }
             });
+            request.send(data);
           });
         }
 
@@ -1656,12 +1672,12 @@ function form() {
         postData(formData).then(function () {
           return statusMassage.innerHTML = massage.loading;
         }).then(function () {
-          statusMassage.innerHTML = massage.success;
           img.src = "img/savedisk.png";
           elem.appendChild(img);
+          statusMassage.innerHTML = massage.success;
         }).catch(function () {
           return statusMassage.innerHTML = massage.failure;
-        }).then(_clearInput);
+        }).then(_clearInput());
       } else {
         img.src = "img/hold.png";
         elem.appendChild(img);
