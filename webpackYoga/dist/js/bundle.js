@@ -1645,10 +1645,16 @@ function form() {
         var formData = new FormData(elem);
 
         function postData(data) {
-          var request = new XMLHttpRequest();
-          request.open('POST', 'server.php');
-          request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
           return new _Promise(function (resolve, reject) {
+            var request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            var obj = {};
+            formData.forEach(function (value, key) {
+              obj[key] = value;
+            });
+            var json = JSON.stringify(obj);
+            data = json;
             request.addEventListener('readystatechange', function () {
               if (request.readyState < 4) {
                 resolve();
